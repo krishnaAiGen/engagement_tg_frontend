@@ -1,6 +1,19 @@
 // File: frontend/lib/api.ts
 
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+export async function publicApiRequest(endpoint: string, method: 'POST', body: object) {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.detail || 'An unknown API error occurred');
+  }
+  return data;
+}
 
 // A single, powerful function for all authenticated API requests
 export async function apiRequest(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', token: string, body?: object) {
